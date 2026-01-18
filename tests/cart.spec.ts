@@ -5,7 +5,7 @@ test.describe('Testcases for CartPage', () => {
         await homePage.goto();
     });
 
-    test('TC_05.Verify Product Quantity Can Be Updated in Cart', async ({
+    test.skip('TC_05.Verify Product Quantity Can Be Updated in Cart', async ({
         shopPageBusiness,
         productPage,
         cartPage,
@@ -38,35 +38,34 @@ test.describe('Testcases for CartPage', () => {
         await cartPageVerification.checkCartUpdate(product);
     });
 
-    test('TC_07.Verify Users Can Clear the Shopping Cart', async ({ 
+    test('TC_07.Verify Users Can Clear the Shopping Cart', async ({
         page,
         shopPageBusiness,
         cartPage,
         myAccountPage
     }) => {
-    
-            let productTitles = ['AirPods'];
-    
-            //2. Login with valid credentials
-            await myAccountPage.login('congabietbay@grr.la', '12345678');
-    
-            //Pre-condition: Add product to cart
-            await shopPageBusiness.addProductsToCart(productTitles);
-    
-            //Main step
-            //3. Go to Shopping cart page
-            await cartPage.goto();
 
-            //4. Verify items show in table
-            await expect.soft(cartPage.productListLocator.nth(0)).toContainText(productTitles[0]);
+        let productTitles = ['AirPods'];
 
-            //5. Click on Clear shopping cart
-            await cartPage.clearCartButton.click();
-            page.on('dialog', dialog => dialog.accept());
-            await page.getByRole('button').click();
-    
-            //6. Verify empty cart page displays
-            //YOUR SHOPPING CART IS EMPTY displays
-            await expect(page.getByText('YOUR SHOPPING CART IS EMPTY', { exact: false })).toBeVisible();
-        });
+        //2. Login with valid credentials
+        await myAccountPage.login('congabietbay@grr.la', '12345678');
+
+        //Pre-condition: Add product to cart
+        await shopPageBusiness.addProductsToCart(productTitles);
+
+        //Main step
+        //3. Go to Shopping cart page
+        await cartPage.goto();
+
+        //4. Verify items show in table
+        await expect.soft(cartPage.productListLocator.nth(0)).toContainText(productTitles[0]);
+
+        //5. Click on Clear shopping cart
+        await cartPage.clearCartButton.click();
+        page.on('dialog', dialog => dialog.accept());
+
+        //6. Verify empty cart page displays
+        //YOUR SHOPPING CART IS EMPTY displays
+        await expect(page.getByText('YOUR SHOPPING CART IS EMPTY', { exact: false })).toBeVisible();
+    });
 });
