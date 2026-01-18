@@ -5,65 +5,83 @@ export class CheckoutPage {
     static CHECKOUTPAGE_URL = "/checkout";
     private page: Page;
 
-    readonly _firstnameInput: Locator;
-    readonly _lastnameInput: Locator;
-    readonly _countryInput: Locator;
-    readonly _addressInput: Locator;
-    readonly _cityInput: Locator;
-    readonly _stateInput: Locator;
-    readonly _zipCodeInput: Locator;
-    readonly _phoneInput: Locator;
-    readonly _emailInput: Locator;
-    readonly _placeOrderButton: Locator;
-    readonly _errorMessage: Locator;
+    readonly firstnameInput: Locator;
+    readonly lastnameInput: Locator;
+    readonly countryInput: Locator;
+    readonly addressInput: Locator;
+    readonly cityInput: Locator;
+    readonly stateInput: Locator;
+    readonly zipCodeInput: Locator;
+    readonly phoneInput: Locator;
+    readonly emailInput: Locator;
+    readonly placeOrderButton: Locator;
+    readonly errorMessage: Locator;
+
+    //Payment methods
+    readonly directBankTransfer: Locator;
+    readonly checkPayments: Locator;
+    readonly cashOnDeliveryOption: Locator;
+    readonly checkoutSuccessMessage: Locator;
+
+
+    readonly orderInformation: Locator;
+    readonly orderNumber: Locator;
 
     constructor(page: Page) {
         this.page = page;
-        this._firstnameInput = page.locator("//input[@id = 'billing_first_name']");
-        this._lastnameInput = page.locator("//input[@id = 'billing_last_name']");
-        this._countryInput = page.locator("//span[@arial-label = 'Country / Region']");
-        this._addressInput = page.locator("//input[@id = 'billing_address_1']");
-        this._cityInput = page.locator("//input[@id = 'billing_city']");
-        this._stateInput = page.locator("//span[@arial-label = 'State']");
-        this._zipCodeInput = page.locator("//input[@id = 'billing_postcode']");
-        this._phoneInput = page.locator("//input[@id = 'billing_phone']");
-        this._emailInput = page.locator("//input[@id = 'billing_email']");
-        this._placeOrderButton = page.getByRole('button', { name: 'Place order' });
-        this._errorMessage = page.locator("//ul[@role = 'alert']");
+        this.firstnameInput = page.locator("//input[@id = 'billing_first_name']");
+        this.lastnameInput = page.locator("//input[@id = 'billing_last_name']");
+        this.countryInput = page.locator("//span[@arial-label = 'Country / Region']");
+        this.addressInput = page.locator("//input[@id = 'billing_address_1']");
+        this.cityInput = page.locator("//input[@id = 'billing_city']");
+        this.stateInput = page.locator("//span[@arial-label = 'State']");
+        this.zipCodeInput = page.locator("//input[@id = 'billing_postcode']");
+        this.phoneInput = page.locator("//input[@id = 'billing_phone']");
+        this.emailInput = page.locator("//input[@id = 'billing_email']");
+        this.placeOrderButton = page.getByRole('button', { name: 'Place order' });
+        this.errorMessage = page.locator("//ul[@role = 'alert']");
+
+        //Payment methods
+        this.directBankTransfer = page.locator("//input[@id = 'payment_method_bacs']");
+        this.checkPayments = page.locator("//input[@id = 'payment_method_cheque']");
+        this.cashOnDeliveryOption = page.locator("//input[@id = 'payment_method_cod']");
+
+
+        this.checkoutSuccessMessage = page.locator("//p[contains(@class, 'woocommerce-notice--success')]");
+        this.orderInformation = page.locator("//div[@class = 'woocommerce-order']")
+        this.orderNumber = page.locator("//li[contains(text(), 'Order number')]/strong");
     }
 
     async goto() {
         await this.page.goto(CheckoutPage.CHECKOUTPAGE_URL);
+        await this.page.waitForLoadState();
     }
 
     async fillBillingDetail(billingDetail: BillingDetail) {
-        // await Promise.all([
-            await this._firstnameInput.fill(billingDetail.firstname),
-            await this._lastnameInput.fill(billingDetail.lastname),
-            // await this._countryInput.selectOption(billingDetail.country),
-            await this._addressInput.fill(billingDetail.address),
-            await this._cityInput.fill(billingDetail.city),
-            // await this._stateInput.selectOption(billingDetail.state),
-            await this._zipCodeInput.fill(billingDetail.zipCode),
-            await this._phoneInput.fill(billingDetail.phone),
-            await this._emailInput.fill(billingDetail.email)
-        // ]);
+        await this.firstnameInput.fill(billingDetail.firstname);
+        await this.lastnameInput.fill(billingDetail.lastname);
+        // await this._countryInput.selectOption(billingDetail.country);
+        await this.addressInput.fill(billingDetail.address);
+        await this.cityInput.fill(billingDetail.city);
+        // await this._stateInput.selectOption(billingDetail.state),
+        await this.zipCodeInput.fill(billingDetail.zipCode);
+        await this.phoneInput.fill(billingDetail.phone);
+        await this.emailInput.fill(billingDetail.email);
     }
 
-    async clickOrderButton() {
-        await this._placeOrderButton.click();
-    }
-
-    async checkHighlightMissingField() {
-        await expect.soft(this._firstnameInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._lastnameInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        // await expect.soft(this._countryInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._addressInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._cityInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        // await expect.soft(this._stateInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._zipCodeInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._phoneInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-        await expect.soft(this._emailInput.locator("xpath=./ancestor::p")).toContainClass("woocommerce-invalid");
-
+    async choosePaymentMethod(paymentMethod: string) {
+        switch (paymentMethod) {
+            case 'direct bank transfer':
+                await this.directBankTransfer.click();
+                break;
+            case 'check payments':
+                await this.checkPayments.click();
+                break;
+            case 'cash on delivery':
+                await this.cashOnDeliveryOption.click();
+                break;
+            default:
+                throw new Error(`Payment method ${paymentMethod} is not supported.`);
+        }
     }
 }

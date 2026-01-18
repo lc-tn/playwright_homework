@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 export class HomePage {
-    private page: Page;
+    protected page: Page;
 
     //Notification locator
     readonly notiPopup: Locator;
@@ -27,7 +27,9 @@ export class HomePage {
     readonly mainCategoryDropdown: Locator;
     readonly mainCategoryLinks: Locator;
 
-    readonly _cartQuantityLocator: Locator;
+    readonly cartQuantityLocator: Locator;
+
+    readonly wishlistCountLocator: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -43,7 +45,7 @@ export class HomePage {
         //Header section locator
         this.phoneNumberSpan = page.getByText('Order online or call us');
         this.addressSpan = page.locator('//i[contains(@class, "et-internet")]/following-sibling::span');
-        this.loginSignupLink = page.getByRole('link', { name: 'Log in / Sign up' });
+        this.loginSignupLink = page.locator("//div[contains(@class, 'login-link')]//span[contains(@class, 'et-element-label')]");
         this.mainNavigationLinks = page.locator('//ul[contains(@id, "menu-main-menu-1")]//a');
         this.socialMediaLinks = page.locator('//div[@class = "header-wrapper"]//div[contains(@class, "et-socials")]/a');
 
@@ -56,7 +58,9 @@ export class HomePage {
         this.mainCategoryDropdown = page.getByText('All departments');
         this.mainCategoryLinks = page.locator('//ul[contains(@id, "menu-all-departments-1")]//a');
 
-        this._cartQuantityLocator = page.locator("//div[@class = 'header-wrapper']//a//span[contains(@class, 'et-cart-quantity')]");
+        this.cartQuantityLocator = page.locator("//div[@class = 'header-wrapper']//a//span[contains(@class, 'et-cart-quantity')]");
+
+        this.wishlistCountLocator = page.locator("//div[contains(@class, 'header-main')]//a//span[contains(@class, 'et-wishlist-quantity')]");
     }
 
     async goto() {
@@ -83,4 +87,10 @@ export class HomePage {
             .click();
         await this.page.waitForLoadState();
     }
+
+    async searchProduct(category: string, keyword: string) {
+        await this.categoryDropdown.selectOption(category);
+        await this.searchTextbox.fill(keyword);
+        await this.searchButton.click();
+    } 
 }

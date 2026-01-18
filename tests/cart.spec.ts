@@ -1,59 +1,72 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../src/pages/home.page';
-import { ShopPage } from '../src/pages/shop.page';
-import { CartPage } from '../src/pages/cart.page';
-import { ShopPageBusiness } from '../src/businesses/shoppage';
-import { CartPageBusiness } from '../src/businesses/cartpage';
-import { CartPageVerification } from '../src/verifications/cartpage';
-import { ProductPage } from '../src/pages/product.page';
-import { HomePageBusiness } from '../src/businesses/homepage';
+import { test, expect } from "./test-fixtures";
 
-test.describe('Testcases involving CartPage', () => {
-    let homePage: HomePage;
-    let homePageBusiness: HomePageBusiness;
-    // let homePageVerification: HomePageVerification;
-
-    let shopPage: ShopPage;
-    let shopPageBusiness: ShopPageBusiness;
-    // let shopPageVerification: ShopPageVerification;
-
-    let cartPage: CartPage;
-    let cartPageBusiness: CartPageBusiness;
-    let cartPageVerification: CartPageVerification;
-
-    let productPage: ProductPage;
-
-    test.beforeEach(async ({ page }) => {
-        homePage = new HomePage(page);
-        homePageBusiness = new HomePageBusiness(page);
-        // homePageVerification = new HomePageVerification(page);
-
-        shopPage = new ShopPage(page);
-        shopPageBusiness = new ShopPageBusiness(page);
-        // shopPageVerification = new ShopPageVerification(page);
-
-        cartPage = new CartPage(page);
-        cartPageBusiness = new CartPageBusiness(page);
-        cartPageVerification = new CartPageVerification(page);
-
-        productPage = new ProductPage(page);
-
+test.describe('Testcases for CartPage', () => {
+    test.beforeEach(async ({ homePage }) => {
         await homePage.goto();
     });
 
-    test('TC_05.Verify Product Quantity Can Be Updated in Cart', async ({ page }) => {
+    test('TC_05.Verify Product Quantity Can Be Updated in Cart', async ({
+        shopPageBusiness,
+        productPage,
+        cartPage,
+        cartPageVerification
+    }) => {
 
         let productTitles = ['AirPods'];
 
         //Pre-condition: Add product to cart
         await shopPageBusiness.addProductsToCart(productTitles);
-        await shopPage._successMessage.waitFor({state: 'visible'});
         const product = await productPage.getProduct();
 
         //Main step
-        await homePageBusiness.goToCartPage();
-        await cartPageBusiness.updateProductQuantity(product.title, '2');
-        await expect.soft(cartPage._successMessageLocator).toBeVisible();
+
+        //1. Navigate to Cart page
+        await cartPage.goto();
+
+        //2. Locate quantity field
+        //3. Change quantity to 2
+        //4. Click "Update Cart" button
+        await cartPage.updateProductQuantity(product.title, '2');
+
+        //5. Verify cart updates
+        //Checkpoints:
+        //- Success message should appear
+        await expect.soft(cartPage.successMessageLocator).toBeVisible({ timeout: 10000 });
+
+        //- Quantity should update
+        // - Cart total should recalculate
         await cartPageVerification.checkCartUpdate(product);
     });
+
+    test('TC_07.Verify Users Can Clear the Shopping Cart', async ({ 
+        page,
+        shopPageBusiness,
+        cartPage,
+        myAccountPage
+    }) => {
+    
+            let productTitles = ['AirPods'];
+    
+            //2. Login with valid credentials
+            await myAccountPage.login('congabietbay@grr.la', '12345678');
+    
+            //Pre-condition: Add product to cart
+            await shopPageBusiness.addProductsToCart(productTitles);
+    
+            //Main step
+            //3. Go to Shopping cart page
+            await cartPage.goto();
+
+            //4. Verify items show in table
+            await expect.soft(cartPage.productListLocator.nth(0)).toContainText(productTitles[0]);
+
+            //5. Click on Clear shopping cart
+            await cartPage.clearCartButton.click();
+            page.on('dialog', dialog => dialog.accept());
+            await page.getByRole('button').click();
+    
+            //6. Verify empty cart page displays
+            //YOUR SHOPPING CART IS EMPTY displays
+            await expect(page.getByText('YOUR SHOPPING CART IS EMPTY', { exact: false })).toBeVisible();
+        });
 });

@@ -38,4 +38,8 @@ export class HomePageVerification {
         const mainCategoriesLocators = await this.homePage.mainCategoryLinks.allTextContents();
         expect.soft(new Set(mainCategoriesLocators)).toEqual(new Set(categories));
     }
+
+    async verifyUserLogin(email: string){
+        await expect.soft(this.homePage.loginSignupLink).toContainText(email);
+    }
 }

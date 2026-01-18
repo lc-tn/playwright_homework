@@ -1,22 +1,27 @@
 import { Locator, Page } from "@playwright/test";
 import { Product } from "../models/product.model";
-import { ProductHelper } from "../helpers/product.helper";
+import { HomePage } from "./home.page";
+import { formatPrice } from "../utils/data-format";
 
-export class ProductPage {
-    private page: Page;
-    private productHelper;
+export class ProductPage extends HomePage {
 
     readonly addToCartButton: Locator;
     readonly productTitle: Locator;
     readonly productPrice: Locator;
+    readonly addProductToCartSuccessMessage: Locator;
+
+    readonly addToWishlistLink: Locator;
 
     constructor(page: Page) {
-        this.page = page;
-        this.productHelper = new ProductHelper();
+        super(page);
 
         this.addToCartButton = page.locator("//form[@class = 'cart']//button");
         this.productTitle = page.locator("(//h1)[1]");
         this.productPrice = page.locator("(//p[@class = 'price'])[1]");
+
+        this.addProductToCartSuccessMessage = page.locator("//div[@data-type ='success' or contains(@class, 'woocommerce-message')]");
+
+        this.addToWishlistLink = page.locator("//div[@class = 'product-information-inner']//a[contains(@class, 'add_to_wishlist')]");
     }
 
     async getProduct(): Promise<Product> {
@@ -25,7 +30,7 @@ export class ProductPage {
 
         const product = new Product({
             title: title.trim(),
-            price: this.productHelper.formatPrice(price).toString()
+            price: formatPrice(price).toString()
         })
         return product;
     }

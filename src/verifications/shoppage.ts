@@ -5,12 +5,10 @@ import { ShopPageBusiness } from "../businesses/shoppage";
 export class ShopPageVerification {
     private page: Page;
     private shopPage;
-    private shopPageBusiness: ShopPageBusiness;
 
     constructor(page: Page) {
         this.page = page;
         this.shopPage = new ShopPage(this.page);
-        this.shopPageBusiness = new ShopPageBusiness(page);
     }
 
     async checkSearchResultTitle(keyword: string) {
@@ -19,7 +17,7 @@ export class ShopPageVerification {
     }
 
     async checkSearchProductByName(keyword: string) {
-        const products = await this.shopPage._productListLocator.all();
+        const products = await this.shopPage.productListLocator.all();
         const matchProduct = products.map(product =>
             product.filter({ hasText: keyword })
         )

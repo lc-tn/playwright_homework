@@ -1,43 +1,42 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { Product } from "../models/product.model";
-import { ProductHelper } from "../helpers/product.helper";
+import { HomePage } from "./home.page";
+import { formatPrice } from "../utils/data-format";
 
-export class ShopPage {
+export class ShopPage extends HomePage {
     static SHOPPAGE_URL = "/shop";
-    productHelper = new ProductHelper();
 
-    private page: Page;
     readonly searchResultTitle: Locator;
 
     //Product
-    readonly _productListLocator: Locator;
-    readonly _productTitleLocator: Locator;
-    readonly _productPriceLocator: Locator;
+    readonly productListLocator: Locator;
+    readonly productTitleLocator: Locator;
+    readonly productPriceLocator: Locator;
 
     //Cart
-    readonly _cartQuantityLocator: Locator;
-    readonly _cartTotalLocator: Locator;
-    readonly _successMessage: Locator;
-    readonly _cartProductsLocator: Locator;
-    readonly _checkoutButton: Locator;
+    readonly cartQuantityLocator: Locator;
+    readonly cartTotalLocator: Locator;
+    
+    readonly cartProductsLocator: Locator;
+    readonly checkoutButton: Locator;
     // private _cartProductQuantityLocator: Locator;
 
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.searchResultTitle = page.getByRole('heading', { name: 'Search results for' })
 
         //Product
-        this._productListLocator = page.locator("//div[contains(@class,'content-product')]");
-        this._productPriceLocator = page.locator("//span[@class = 'price']");
-        this._productTitleLocator = page.locator("//h2[@class = 'product-title']");
+        this.productListLocator = page.locator("//div[contains(@class,'content-product')]");
+        this.productPriceLocator = page.locator("//span[@class = 'price']");
+        this.productTitleLocator = page.locator("//h2[@class = 'product-title']");
 
         //Cart
-        this._cartQuantityLocator = page.locator("//div[@class = 'header-wrapper']//a//span[contains(@class, 'et-cart-quantity')]");
-        this._cartTotalLocator = page.locator("//div[@class = 'header-wrapper']//a//span[@class = 'woocommerce-Price-amount amount']");
-        this._successMessage = page.locator("//div[@data-type ='success']");
-        this._cartProductsLocator = page.locator("//div[@class = 'header-wrapper']//h4[@class = 'product-title']");
-        this._checkoutButton = page.locator("//div[@class = 'header-wrapper']//a[text() = 'Checkout']");
+        this.cartQuantityLocator = page.locator("//div[@class = 'header-wrapper']//a//span[contains(@class, 'et-cart-quantity')]");
+        this.cartTotalLocator = page.locator("//div[@class = 'header-wrapper']//a//span[@class = 'woocommerce-Price-amount amount']");
+        
+        this.cartProductsLocator = page.locator("//div[@class = 'header-wrapper']//h4[@class = 'product-title']");
+        this.checkoutButton = page.locator("//div[@class = 'header-wrapper']//a[text() = 'Checkout']");
         // this._cartProductQuantityLocator = page.locator("//div[@class = 'header-wrapper']//span[@class = 'quantity']");
     }
 
@@ -51,56 +50,56 @@ export class ShopPage {
         await this.page.waitForLoadState();
     }
 
-    async getProductList(): Promise<Product[]> {
-        const productList: Product[] = [];
+    // async getProductList(): Promise<Product[]> {
+    //     const productList: Product[] = [];
 
-        const products = await this._productListLocator.all();
+    //     const products = await this._productListLocator.all();
 
-        for (const product of products) {
-            const title = await product.locator(this._productTitleLocator).textContent() ?? "";
-            const price = await product.locator(this._productPriceLocator).textContent() ?? "";
-            productList.push(
-                new Product({
-                    title: title.trim(),
-                    price: this.productHelper.formatPrice(price).toString()
-                })
-            )
-        }
-        return productList;
-    }
+    //     for (const product of products) {
+    //         const title = await product.locator(this._productTitleLocator).textContent() ?? "";
+    //         const price = await product.locator(this._productPriceLocator).textContent() ?? "";
+    //         productList.push(
+    //             new Product({
+    //                 title: title.trim(),
+    //                 price: this.productHelper.formatPrice(price).toString()
+    //             })
+    //         )
+    //     }
+    //     return productList;
+    // }
 
-    async getProductByTitle(productNames: string[]): Promise<Product[]> {
-        const productList: Product[] = [];
+    // async getProductByTitle(productNames: string[]): Promise<Product[]> {
+    //     const productList: Product[] = [];
 
-        for (const productName of productNames) {
-            const titleLocator = this.page.locator(
-                `//a[normalize-space() = "${productName}"]`
-            );
-            if (titleLocator) {
-                const priceLocator = this.page.locator(
-                    `//a[normalize-space() = "${productName}"]/parent::h2/following-sibling::span`
-                )
-                const title = await titleLocator.textContent() ?? "";
-                const price = await priceLocator.textContent() ?? "";
-                productList.push(
-                    new Product({
-                        title: title.trim(),
-                        price: this.productHelper.formatPrice(price).toString()
-                    })
-                )
-            }
-        }
-        return productList;
-    }
+    //     for (const productName of productNames) {
+    //         const titleLocator = this.page.locator(
+    //             `//h1[normalize-space() = "${productName}"]`
+    //         );
+    //         if (titleLocator) {
+    //             const priceLocator = this.page.locator(
+    //                 `//h1[normalize-space() = "${productName}"]/following-sibling::p[@class = 'price']`
+    //             )
+    //             const title = await titleLocator.textContent() ?? "";
+    //             const price = await priceLocator.textContent() ?? "";
+    //             productList.push(
+    //                 new Product({
+    //                     title: title.trim(),
+    //                     price: this.productHelper.formatPrice(price).toString()
+    //                 })
+    //             )
+    //         }
+    //     }
+    //     return productList;
+    // }
 
     async getCartQuanity(): Promise<number> {
-        const quantity = await this._cartQuantityLocator.textContent() ?? "";
+        const quantity = await this.cartQuantityLocator.textContent() ?? "";
         return Number(quantity);
     }
 
     async getCartTotal(): Promise<number> {
-        const total = await this._cartTotalLocator.textContent() ?? "";
-        const parsedTotal = this.productHelper.formatPrice(total);
+        const total = await this.cartTotalLocator.textContent() ?? "";
+        const parsedTotal = formatPrice(total);
         return parsedTotal;
     }
 
@@ -117,21 +116,17 @@ export class ShopPage {
             initialTotal += Number(product.price);
         }
 
-        await expect.soft(this._cartQuantityLocator).toHaveText(initialQuantity.toString());
-        await expect.soft(this._cartTotalLocator).toContainText(initialTotal.toString());
+        await expect.soft(this.cartQuantityLocator).toHaveText(initialQuantity.toString());
+        await expect.soft(this.cartTotalLocator).toContainText(initialTotal.toString());
     }
 
-    async checkSuccessMessage() {
-        await expect.soft(this._successMessage).toBeVisible();
-    }
-
-    async checkProductAddedToCart(products: Product[]) {
-        const expectedProducts = products.map(product => product.title);
-        await expect(this._cartProductsLocator).toHaveText(expectedProducts);
-    }
+    // async checkProductAddedToCart(products: Product[]) {
+    //     const expectedProducts = products.map(product => product.title);
+    //     await expect(this._cartProductsLocator).toHaveText(expectedProducts);
+    // }
 
     async clickCheckoutButton() {
-        await this._cartQuantityLocator.hover();
-        await this._checkoutButton.click();
+        await this.cartQuantityLocator.hover();
+        await this.checkoutButton.click();
     }
 }

@@ -5,6 +5,8 @@ export default defineConfig({
   reporter: "html",
   use: {
     baseURL: "https://demo.testarchitect.com/",
+    headless: false,
+    viewport: null,
   },
 
   projects: [
