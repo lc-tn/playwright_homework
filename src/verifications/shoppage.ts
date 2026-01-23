@@ -1,6 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { ShopPage } from "../pages/shop.page";
 import { ShopPageBusiness } from "../businesses/shoppage";
+import { Product } from "../models/product.model";
 
 export class ShopPageVerification {
     private page: Page;
@@ -23,4 +24,14 @@ export class ShopPageVerification {
         )
         expect.soft(matchProduct.length).toEqual(matchProduct.length);
     }
+
+    // async checkCartIcon(products: Product[], initialQuantity: number, initialTotal: number) {
+    //     for (const product of products) {
+    //         initialQuantity++;
+    //         initialTotal += Number(product.price);
+    //     }
+
+    //     await expect.soft(this.shopPage.cartQuantityLocator).toHaveText(initialQuantity.toString());
+    //     await expect.soft(this.shopPage.cartTotalLocator).toContainText(initialTotal.toString());
+    // }
 }

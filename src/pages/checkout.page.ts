@@ -8,9 +8,11 @@ export class CheckoutPage {
     readonly firstnameInput: Locator;
     readonly lastnameInput: Locator;
     readonly countryInput: Locator;
+    readonly countryOption: Locator;
     readonly addressInput: Locator;
     readonly cityInput: Locator;
     readonly stateInput: Locator;
+    readonly stateOption: Locator;
     readonly zipCodeInput: Locator;
     readonly phoneInput: Locator;
     readonly emailInput: Locator;
@@ -31,10 +33,12 @@ export class CheckoutPage {
         this.page = page;
         this.firstnameInput = page.locator("//input[@id = 'billing_first_name']");
         this.lastnameInput = page.locator("//input[@id = 'billing_last_name']");
-        this.countryInput = page.locator("//span[@arial-label = 'Country / Region']");
+        this.countryInput = page.locator("//select[@id = 'billing_country']");
+        this.countryOption = page.locator("//li[contains(@id, 'select2-billing_country')]");
         this.addressInput = page.locator("//input[@id = 'billing_address_1']");
         this.cityInput = page.locator("//input[@id = 'billing_city']");
-        this.stateInput = page.locator("//span[@arial-label = 'State']");
+        this.stateInput = page.locator("//select[@id = 'billing_state']");
+        this.stateOption = page.locator("//li[contains(@id, 'select2-billing_state')]");
         this.zipCodeInput = page.locator("//input[@id = 'billing_postcode']");
         this.phoneInput = page.locator("//input[@id = 'billing_phone']");
         this.emailInput = page.locator("//input[@id = 'billing_email']");
@@ -60,10 +64,12 @@ export class CheckoutPage {
     async fillBillingDetail(billingDetail: BillingDetail) {
         await this.firstnameInput.fill(billingDetail.firstname);
         await this.lastnameInput.fill(billingDetail.lastname);
-        // await this._countryInput.selectOption(billingDetail.country);
+        billingDetail.country && 
+            await this.countryInput.selectOption(billingDetail.country);
         await this.addressInput.fill(billingDetail.address);
         await this.cityInput.fill(billingDetail.city);
-        // await this._stateInput.selectOption(billingDetail.state),
+        billingDetail.state &&
+            await this.stateInput.selectOption(billingDetail.state),
         await this.zipCodeInput.fill(billingDetail.zipCode);
         await this.phoneInput.fill(billingDetail.phone);
         await this.emailInput.fill(billingDetail.email);

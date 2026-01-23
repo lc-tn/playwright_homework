@@ -1,6 +1,7 @@
+import { formatPrice } from "../utils/data-format";
+
 export class Product{
     private _title: string = "";
-    private _category: string = "";
     private _price: string = "";
 
     constructor(init?: Partial<Product>) {
@@ -20,6 +21,6 @@ export class Product{
     }
 
     public set price(value: string){
-        this._price = value;
+        this._price = formatPrice(value).toString();
     }
 }

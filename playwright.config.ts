@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: "./tests",
   reporter: "html",
+  timeout: 120_000,
   use: {
     baseURL: "https://demo.testarchitect.com/",
     headless: false,

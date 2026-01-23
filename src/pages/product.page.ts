@@ -30,7 +30,7 @@ export class ProductPage extends HomePage {
 
         const product = new Product({
             title: title.trim(),
-            price: formatPrice(price).toString()
+            price: price.trim(),
         })
         return product;
     }

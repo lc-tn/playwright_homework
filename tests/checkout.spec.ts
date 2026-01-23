@@ -37,7 +37,6 @@ test.describe('Testcases involving CheckoutPage', () => {
     });
 
     test('TC_08.Verify Guest User Can Complete Checkout', async ({ 
-        page,
         shopPageBusiness,
         cartPage,
         checkoutPage,
@@ -48,8 +47,10 @@ test.describe('Testcases involving CheckoutPage', () => {
         const billingDetail = new BillingDetail({
             firstname: 'John',
             lastname: 'Henry',
+            country: 'Uruguay',
             address: '123 Main Street',
             city: 'Helsinki',
+            state: 'Colonia',
             zipCode: '00100',
             phone: '+358401234567',
             email: 'john.henry@testmail.com',

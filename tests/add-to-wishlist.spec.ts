@@ -7,11 +7,15 @@ test.describe('Testcases involving CartPage', () => {
 
     test('TC_10.Verify Product Can Be Added to Wishlist', async ({ 
         shopPage,
+        myAccountPage,
         productPage,
         wishlistPage
     }) => {
 
         let productTitles = ['AirPods'];
+
+        //Pre-condition
+        await myAccountPage.login('congabietbay@grr.la', '12345678');
 
         //1. Navigate to Shop page
         await shopPage.goto();

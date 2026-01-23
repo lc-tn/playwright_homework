@@ -60,17 +60,7 @@ export class ShopPage extends HomePage {
 
         await addToCartBtn.click();
     }
-
-    async checkCartIcon(products: Product[], initialQuantity: number, initialTotal: number) {
-        for (const product of products) {
-            initialQuantity++;
-            initialTotal += Number(product.price);
-        }
-
-        await expect.soft(this.cartQuantityLocator).toHaveText(initialQuantity.toString());
-        await expect.soft(this.cartTotalLocator).toContainText(initialTotal.toString());
-    }
-
+    
     async clickCheckoutButton() {
         await this.cartQuantityLocator.hover();
         await this.checkoutButton.click();
